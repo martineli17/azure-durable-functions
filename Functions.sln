@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - Orquestracao", "01 - Orquestracao", "{325BB7C6-6EE3-4E17-992C-F40E12D3310F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orquestracao", "Orquestracao\Orquestracao.csproj", "{D3734B19-68F0-491E-99D5-AFD3830E08BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3734B19-68F0-491E-99D5-AFD3830E08BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3734B19-68F0-491E-99D5-AFD3830E08BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3734B19-68F0-491E-99D5-AFD3830E08BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3734B19-68F0-491E-99D5-AFD3830E08BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D3734B19-68F0-491E-99D5-AFD3830E08BA} = {325BB7C6-6EE3-4E17-992C-F40E12D3310F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B54CD8D4-B28B-40C8-A6DF-4204468D92BC}
+	EndGlobalSection
+EndGlobal
