@@ -19,7 +19,7 @@ namespace Orquestracao
             ILogger log)
         {
             var salario = Convert.ToDecimal(req.Query["salario"].ToString());
-            string instanceId = await starter.StartNewAsync("Orchestrator", null, salario);
+            string instanceId = await starter.StartNewAsync("Activity_Orchestrator", null, salario);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 
@@ -30,26 +30,37 @@ namespace Orquestracao
         public async Task Orchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
+            var entity = new EntityId("Entity_Descontos", "teste2");
+            var totalDescontos = 0M;
+            
+
             var retryOptions = new RetryOptions(firstRetryInterval: TimeSpan.FromSeconds(5), maxNumberOfAttempts: 3);
 
             var valorSalarioBruto = context.GetInput<decimal>();
-            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(20), default);
+
+            // INSS
+            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(0), default);
             context.SetCustomStatus("ULTIMA ETAPA CONCLUIDA: CALCULAR INSS");
             var valorINSS = await context.CallActivityWithRetryAsync<decimal>("Activity_CalcularINSS", retryOptions, valorSalarioBruto);
+            totalDescontos = await context.CallEntityAsync<decimal>(entity, "add", valorINSS);
 
-            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(20), default);
+            // SALARIO BASE
+            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(0), default);
             context.SetCustomStatus("ULTIMA ETAPA CONCLUIDA: CALCULAR SALARIO BASE");
             var valorSalarioBase = await context.CallActivityWithRetryAsync<decimal>("Activity_CalcularSalarioBase", retryOptions, (valorINSS, valorSalarioBruto));
 
-            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(20), default);
+            // IMPOSTO DE RENDA
+            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(0), default);
             context.SetCustomStatus("ULTIMA ETAPA CONCLUIDA: CALCULAR IMPOSTO DE RENDA");
             var valorImpostoRenda = await context.CallActivityWithRetryAsync<decimal>("Activity_CalcularImpostoRenda", retryOptions, valorSalarioBase);
+            totalDescontos = await context.CallEntityAsync<decimal>(entity, "add", valorImpostoRenda);
 
-            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(20), default);
+            // SALARIO LIQUIDO
+            await context.CreateTimer(context.CurrentUtcDateTime.AddSeconds(0), default);
             context.SetCustomStatus("ULTIMA ETAPA CONCLUIDA: CALCULAR SALARIO LIQUIDO");
             var valorSalarioLiquido = await context.CallActivityWithRetryAsync<decimal>("Activity_CalcularSalarioLiquido", retryOptions, (valorINSS, valorImpostoRenda, valorSalarioBruto));
 
-            context.SetOutput($"VALOR SALARIO LIQUIDO: {valorSalarioLiquido}");
+            context.SetOutput($"VALOR SALARIO LIQUIDO: {valorSalarioLiquido} | VALOR TOTAL DESCONTOS: {totalDescontos}");
         }
 
         [FunctionName("Activity_CalcularINSS")]
@@ -74,10 +85,17 @@ namespace Orquestracao
         }
 
         [FunctionName("Activity_CalcularSalarioLiquido")]
-        public decimal CalcularSalarioLiquido([ActivityTrigger] (decimal INSS, decimal IR, decimal Salario) dados, ILogger logger)
+        public decimal CalcularSalarioLiquido([ActivityTrigger] (decimal INSS, decimal IR, decimal Salario) dados, [DurableClient] IDurableEntityClient client,  ILogger logger)
         {
             logger.LogInformation("CALCULANDO SALARIO LIQUIDO");
             return dados.Salario - (dados.INSS + dados.IR);
+        }
+
+        [FunctionName("Entity_Descontos")]
+        public void Counter([EntityTrigger] IDurableEntityContext context)
+        {
+            context.SetState(context.GetState<decimal>() + context.GetInput<decimal>());
+            context.Return(context.GetState<decimal>());
         }
     }
 }
