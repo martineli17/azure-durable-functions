@@ -10,7 +10,11 @@
   },
   "extensions": {
     "durableTask": {
-      "hubName": "Teste01"
+      "hubName": "MyTaskHubName",
+      "storageProvider": {
+        "controlQueueVisibilityTimeout": "00:01:00",
+        "maxQueuePollingInterval": "00:01:00"
+      }
     }
   }
 }
