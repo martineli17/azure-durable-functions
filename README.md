@@ -47,6 +47,18 @@ public async Task<HttpResponseMessage> Starter(
 }
 ```
 
+Ao chamar este endpoint, ele irá retornar links para acompanhar os status da execução da Durable Function
+```json
+{
+"id": "e005529722b94150a984c30d60bf033b",
+"statusQueryGetUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e005529722b94150a984c30d60bf033b?taskHub=MyTaskHubName&connection=Storage&code=hr8Ve2DzzwPaBQ2tbnNVSamPPSr38lqlLcPbbM2skkYV/ecC4tHJtA==",
+"sendEventPostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e005529722b94150a984c30d60bf033b/raiseEvent/{eventName}?taskHub=MyTaskHubName&connection=Storage&code=hr8Ve2DzzwPaBQ2tbnNVSamPPSr38lqlLcPbbM2skkYV/ecC4tHJtA==",
+"terminatePostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e005529722b94150a984c30d60bf033b/terminate?reason={text}&taskHub=MyTaskHubName&connection=Storage&code=hr8Ve2DzzwPaBQ2tbnNVSamPPSr38lqlLcPbbM2skkYV/ecC4tHJtA==",
+"purgeHistoryDeleteUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e005529722b94150a984c30d60bf033b?taskHub=MyTaskHubName&connection=Storage&code=hr8Ve2DzzwPaBQ2tbnNVSamPPSr38lqlLcPbbM2skkYV/ecC4tHJtA==",
+"restartPostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e005529722b94150a984c30d60bf033b/restart?taskHub=MyTaskHubName&connection=Storage&code=hr8Ve2DzzwPaBQ2tbnNVSamPPSr38lqlLcPbbM2skkYV/ecC4tHJtA=="
+}
+```
+
 ### Orchestrator
 > São functions que tem como responsabilidade controlar o fluxo de execução das Durable Functions. Esse tipo não executa nenhuma ação 'externa'.
 
